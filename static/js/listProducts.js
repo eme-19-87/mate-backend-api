@@ -1,6 +1,7 @@
 window.addEventListener('load',()=>{
    
-    lista_productos()
+    lista_productos(0)
+    llenar_filtro_categoria()
 })
 
 
@@ -81,9 +82,14 @@ productos.forEach(producto => {
  * Permite crear las lista lista de productos. Busca los datos con la API y luego se muestran 
  * los datos en una tabla.
  */
-function lista_productos(){
+function lista_productos(id){
     //la dirección de la API
-    action='http://localhost:5000/api/productos/get'
+    if(id<1){
+         action='http://localhost:5000/api/productos/get'
+    }else{
+         action=`http://localhost:5000/api/productos/get_filtrar_categoria/${id}`
+    }
+   
     //Un objeto cabecera
     let encabezado = new Headers();
 
@@ -199,4 +205,33 @@ function eliminar_producto(producto_id){
             }
           });
       
+}
+
+function llenar_filtro_categoria(){
+    action='http://localhost:5000/api/productos/get_categorias'
+    let encabezado=new Headers()
+    let config = {
+        method: "GET",
+        headers: encabezado,
+        mode:'cors',
+        cache:'no-cache',
+           
+    }
+
+    fetch(action,config)
+    .then(respuesta=>respuesta.json())
+    .then(respuesta=>{
+        //respuesta es una lista de objeto javascript
+
+        const selectCategorias=document.querySelector("#filtroCategoria")
+        respuesta.data.forEach(categoria=>{
+            let opcion=document.createElement('option')
+            opcion.setAttribute('value',categoria.id)
+            opcion.innerHTML=categoria.name
+            selectCategorias.appendChild(opcion)
+        })
+        selectCategorias.addEventListener('change',(e)=>{
+            lista_productos(e.target.value)
+        })
+    })
 }

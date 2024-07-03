@@ -81,6 +81,16 @@ class Producto:
         except Exception as e:
             raise e
         
+    def get_filtrar_categoria(self,id):
+        try:
+            query="select products.name, products.price, products.stock, products.description,products.img,products.id,products.category_id,categories.name as category from products inner join categories on products.category_id=categories.id where categories.id=%s"
+            value=list()
+            value.append(id)
+            self.cursor.execute(query,value)
+            return self.cursor.fetchall()
+        except Exception as e:
+            raise e
+        
     def eliminar(self,id):
         try:
              query="delete from products where id=%s"

@@ -1,4 +1,4 @@
-from flask import Flask,render_template
+from flask import Flask
 from flask_cors import CORS
 from routes.products_route import bp_producto
 from routes.admin_routes import bp_admin

@@ -19,6 +19,11 @@ Exception:
 Retorna un json con el formato {msg,error}
 Donde msg es el mensaje para indicar el error y error es el mensaje de error en sí
 """
+#GET para obtener los datos
+#POST para agregar nuevos datos o cuando queres enviar datos de manera más segura
+#PUT para actualizar los datos
+#DELETE para borrar los datos
+
 
 @bp_producto.route('/get',methods=['GET'])
 def get_produtos():
@@ -116,12 +121,37 @@ def actualizar():
     
     finally:
         catalogo.cerrar_conexion()
-    
+
+
+"""Recupera la lista de categorias de los productos
+
+Keyword arguments:
+
+Return: Retorna un archivo json donde se tiene la información en forma de lista
+de las categorias
+"""
+
 @bp_producto.route('/get_categorias',methods=['GET'])
 def get_categorias():
     try:
          catalogo=Producto()
          return jsonify({'msg':'Datos recuperados','data':catalogo.get_categorias()})
+    except Exception as e:
+        return jsonify({'msg':'Error al obtener las categorias','error':e})
+    finally:
+        catalogo.cerrar_conexion()
+
+
+@bp_producto.route('/get_filtrar_categoria/<int:id>',methods=['GET'])
+def get_filtro_categoria(id):
+    try:
+         catalogo=Producto()
+         if id<1:
+             datos=jsonify({'msg':'Datos recuperados','data':catalogo.get_products()})
+         else:
+             datos=jsonify({'msg':'Datos recuperados','data':catalogo.get_filtrar_categoria(id)})
+         print(datos)
+         return datos
     except Exception as e:
         return jsonify({'msg':'Error al obtener las categorias','error':e})
     finally:
