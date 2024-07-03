@@ -1,0 +1,15 @@
+a,li{
+    cursor: pointer;
+}
+
+.color-view{
+    color:lightgreen
+}
+
+.color-delete{
+    color:red
+}
+
+.color-edit{
+    color:darkblue
+}
