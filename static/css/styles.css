@@ -13,3 +13,12 @@ a,li{
 .color-edit{
     color:darkblue
 }
+
+.msjError{
+    color:red
+}
+
+img{
+    width: 90%;
+    height: 90%;
+}

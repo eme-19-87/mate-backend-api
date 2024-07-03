@@ -1,6 +1,11 @@
+import { establecer_errores,ventana_mensajes} from "./controlErrors.js";
+
 window.addEventListener('load',(e)=>{
+    //controla un hidden input con el id del producto a actualizar
+    //Si no está presente, no es un entero o no es menor o igual a cero
+    //se muestra un mensaje de error y se redirecciona a la lista de productos
     let idTag=document.querySelector('#id')
-    if (idTag===null){
+    if (idTag===null || parseInt(idTag.value)==null || parseInt(idTag.value)<=0){
         Swal.fire({
             title: "El producto no se encontró",
             icon: "error"
@@ -14,10 +19,14 @@ window.addEventListener('load',(e)=>{
     cargar_datos_producto()
 })
 
-
+/**
+ * Permite cargar las categorias al  desplegable. El parámetro pasado permite
+ * establecer cuál categoría será seleccionada en el desplegable
+ * @param {Integer} categoria_id El id de la categoria del producto cargado
+ */
 function cargar_categorias(categoria_id){
     let categorias=document.querySelector('#category')
-    action='http://localhost:5000/api/productos/get_categorias'
+    const action='http://localhost:5000/api/productos/get_categorias'
 	//creo la cabecera para enviar mis datos
         let encabezado = new Headers();
 	//establezco las configuraciones para el envío
@@ -43,6 +52,9 @@ function cargar_categorias(categoria_id){
     
 }
 
+/**
+ * Carga los datos del producto en el formulario
+ */
 function cargar_datos_producto(){
     let idTag=document.querySelector('#id')
 
@@ -79,7 +91,12 @@ function cargar_datos_producto(){
         })
 }
 
-
+/**
+ * Permite enviar los datos del formulario a la API. Si hay errores, se mostrarán
+ * en etiquetas dentro del formulario.
+ * @param {Event} e Es el objeto de evento. En este caso, tendrá los datos del evento y 
+ * del formulario
+ */
 function actualizar_producto(e){
 
     //evitamos que el formulario se envíe
@@ -114,18 +131,36 @@ function actualizar_producto(e){
         fetch(action,config)
         .then(respuesta => respuesta.json()) 
         .then(respuesta =>{
-            Swal.fire({
-                title: "Producto Actualizado",
-                text:"Por favor, haga click en el botón para continuar",
-                allowOutsideClick:false,
-                confirmButtonText: "Continuar",
-                
-              }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                  return window.location.href='http://localhost:5000/admin/products'
-                } 
-              });
+            //controlo si respuesta tiene o no errores
+            //si no los tiene, muestra los mensajes pertinentes para la actualización
+            //de los productos
+            if(!respuesta.error){
+                Swal.fire({
+                    title: "Producto Actualizado",
+                    text:"Por favor, haga click en el botón para continuar",
+                    allowOutsideClick:false,
+                    confirmButtonText: "Continuar",
+                    
+                  }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                      return window.location.href='http://localhost:5000/admin/products'
+                    } 
+                  });
+            }else{
+                //si hay errores, los muestra y recarga los valores originales del
+                //producto para no perderlos
+                try {
+                    let errores=JSON.parse(respuesta.error.replace(/'/g,'"'))
+                    establecer_errores(errores)
+                    cargar_datos_producto()
+                } catch (error) {
+                    ventana_mensajes('Error al actualizar el producto',respuesta.error)
+                    cargar_datos_producto()
+                }
+              
+            }
+            
             
         })
 

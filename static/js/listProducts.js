@@ -1,6 +1,6 @@
 window.addEventListener('load',()=>{
    
-    lista_productos(0)
+    lista_productos()
     llenar_filtro_categoria()
 })
 
@@ -79,10 +79,11 @@ productos.forEach(producto => {
 }
 
 /**
- * Permite crear las lista lista de productos. Busca los datos con la API y luego se muestran 
- * los datos en una tabla.
+ * 
+ * @param {Integer} id El id de la categoria que se listará. 
+ * Si no se pasan valores, se listarán todos los productos
  */
-function lista_productos(id){
+function lista_productos(id=-1){
     //la dirección de la API
     if(id<1){
          action='http://localhost:5000/api/productos/get'
@@ -128,7 +129,8 @@ function ver_detalles(producto_id){
         fetch(action,config)
         .then(respuesta => respuesta.json()) 
         .then(respuesta =>{
-            console.log(respuesta.data)
+            
+            
             Swal.fire({
                 title: `${respuesta.data.name}`,
                 icon: "info",
@@ -158,7 +160,7 @@ function ver_detalles(producto_id){
                             </div>
 
                             <div class="col-12">
-                               <img src="/static/img/products/${respuesta.data.img}" witdh="300px">
+                              <img src="/static/img/products/${respuesta.data.img}">
                             </div>
                         </div>
                   </div>
@@ -198,10 +200,11 @@ function eliminar_producto(producto_id){
                         if (!respuesta.error){
                             Swal.fire("Producto eliminado");
                             lista_productos()
+                        }else{
+                            Swal.fire(`Error ${e}`);
+                            
                         }
                 })
-            } else if (result.isDenied) {
-              Swal.fire("Changes are not saved", "", "info");
             }
           });
       
