@@ -1,6 +1,7 @@
 window.addEventListener('load',()=>{
    
     lista_productos()
+    llenar_filtro_categoria()
 })
 
 
@@ -78,12 +79,18 @@ productos.forEach(producto => {
 }
 
 /**
- * Permite crear las lista lista de productos. Busca los datos con la API y luego se muestran 
- * los datos en una tabla.
+ * 
+ * @param {Integer} id El id de la categoria que se listará. 
+ * Si no se pasan valores, se listarán todos los productos
  */
-function lista_productos(){
+function lista_productos(id=-1){
     //la dirección de la API
-    action='http://localhost:5000/api/productos/get'
+    if(id<1){
+         action='http://localhost:5000/api/productos/get'
+    }else{
+         action=`http://localhost:5000/api/productos/get_filtrar_categoria/${id}`
+    }
+   
     //Un objeto cabecera
     let encabezado = new Headers();
 
@@ -122,7 +129,8 @@ function ver_detalles(producto_id){
         fetch(action,config)
         .then(respuesta => respuesta.json()) 
         .then(respuesta =>{
-            console.log(respuesta.data)
+            
+            
             Swal.fire({
                 title: `${respuesta.data.name}`,
                 icon: "info",
@@ -152,7 +160,7 @@ function ver_detalles(producto_id){
                             </div>
 
                             <div class="col-12">
-                               <img src="/static/img/products/${respuesta.data.img}" witdh="300px">
+                              <img src="/static/img/products/${respuesta.data.img}">
                             </div>
                         </div>
                   </div>
@@ -192,11 +200,41 @@ function eliminar_producto(producto_id){
                         if (!respuesta.error){
                             Swal.fire("Producto eliminado");
                             lista_productos()
+                        }else{
+                            Swal.fire(`Error ${e}`);
+                            
                         }
                 })
-            } else if (result.isDenied) {
-              Swal.fire("Changes are not saved", "", "info");
             }
           });
       
+}
+
+function llenar_filtro_categoria(){
+    action='http://localhost:5000/api/productos/get_categorias'
+    let encabezado=new Headers()
+    let config = {
+        method: "GET",
+        headers: encabezado,
+        mode:'cors',
+        cache:'no-cache',
+           
+    }
+
+    fetch(action,config)
+    .then(respuesta=>respuesta.json())
+    .then(respuesta=>{
+        //respuesta es una lista de objeto javascript
+
+        const selectCategorias=document.querySelector("#filtroCategoria")
+        respuesta.data.forEach(categoria=>{
+            let opcion=document.createElement('option')
+            opcion.setAttribute('value',categoria.id)
+            opcion.innerHTML=categoria.name
+            selectCategorias.appendChild(opcion)
+        })
+        selectCategorias.addEventListener('change',(e)=>{
+            lista_productos(e.target.value)
+        })
+    })
 }

@@ -1,20 +1,25 @@
-function control_nombre(nombre){
-    let msgError=""
-    if (nombre==="") msgError="El nombre no debe quedar vacío"
+export function establecer_errores(errores){
+    console.log(errores)
+    const nombreError=document.querySelector('#error-nombre')
+    const precioError=document.querySelector('#error-precio')
+    const stockError=document.querySelector('#error-stock')
+    const imagenError=document.querySelector('#error-imagen')
+    nombreError.innerHTML=""
+    precioError.innerHTML=""
+    stockError.innerHTML=""
+    imagenError.innerHTML=""
+    if(errores.nombre) nombreError.innerHTML=errores.nombre
+    if(errores.precio) precioError.innerHTML=errores.precio
+    if(errores.stock) stockError.innerHTML=errores.stock
+    if(errores.imagen) imagenError.innerHTML=errores.imagen
 }
 
-function control_stock(stock){
-    let msgError=""
-    if (stock==="") msgError="Coloque un stock igual o mayor a cero"
-    if(msgError==="" && parseInt(stock)<0) msgError="El stock no pude ser cero"
+export function ventana_mensajes(titulo,mensaje){
+    Swal.fire({
+        title: titulo,
+        text:mensaje,
+
+        
+      })
 }
 
-function control_precio(precio){
-    let msgError=""
-    if (precio==="") msgError="Coloque un precio mayor a cero"
-    if(msgError==="" && parseInt(precio)<=0) msgError="El precio debe ser mayor a cero"
-}
-
-function control_imagen(imagen){
-    
-}
