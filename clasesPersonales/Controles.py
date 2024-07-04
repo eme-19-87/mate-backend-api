@@ -48,6 +48,7 @@ def controlar_nombre(nombre,id):
     
     if producto!=None:
         error="El nombre que se quiere ingresar ya existe"
+        
     if error=="" and nombre=="":
         error="El nombre no debe ser vacío"
     return error
@@ -120,6 +121,7 @@ nombre:String -- el nombre del producto recuperado del formulario
 precio:String -- el precio del producto recuperado del formulario
 stock:String -- el stock del producto recuperado del formulario
 nombre_imagen:String -- el nombre de la imagen del producto recuperado del formulario
+product_id: int--el id del producto en caso que estemos controlando para una actualización
 actualizar:Boolean--define si se controla para una actualización del producto o no. 
 Tendrá un valor falso por defecto, indicando que no se trata de una actualización.
 

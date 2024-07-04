@@ -1,19 +1,29 @@
 import { establecer_errores,ventana_mensajes} from "./controlErrors.js";
 
 window.addEventListener('load',(e)=>{
-    //controla un hidden input con el id del producto a actualizar
-    //Si no está presente, no es un entero o no es menor o igual a cero
-    //se muestra un mensaje de error y se redirecciona a la lista de productos
-    let idTag=document.querySelector('#id')
-    if (idTag===null || parseInt(idTag.value)==null || parseInt(idTag.value)<=0){
-        Swal.fire({
-            title: "El producto no se encontró",
-            icon: "error"
-          });
+    //recupero la ruta completa de la url
+    const parameters = new URL(location.href);
+    //creo un arreglo con las partes separadas por las / y el id estará en el último lugar
+    const ruta=parameters.pathname.split('/');
+    //recupero el id y lo intento convertir a entero
+    const id=parseInt(ruta[ruta.length-1]);
+    
+   
+    if (id===undefined){
           return window.location.href='http://localhost:5000/admin/products'
     }
+     //controla un hidden input con el id del producto a actualizar
+    //Si no está presente, no es un entero o no es menor o igual a cero
+    //se muestra un mensaje de error y se redirecciona a la lista de productos
+    const idTag=document.createElement('input');
+    idTag.setAttribute('type','hidden');
+    idTag.setAttribute('id','id');
+    idTag.setAttribute('name','id');
+    idTag.setAttribute('value',id);
     const formulariosAjax = document.querySelectorAll('.formularioAjax');
+    
     formulariosAjax.forEach(formulario => {
+        formulario.appendChild(idTag)
         formulario.addEventListener('submit',actualizar_producto);
     });
     cargar_datos_producto()
@@ -77,17 +87,24 @@ function cargar_datos_producto(){
         fetch(action,config)
         .then(respuesta => respuesta.json()) 
         .then(respuesta =>{
-            const nombre=document.querySelector("[name='name']")
-            const precio=document.querySelector("[name='price']")
-            const stock=document.querySelector("[name='stock']")
-            const descripcion=document.querySelector("[name='description']")
-            const imgActual=document.querySelector("#imagenProductoActual")
-            imgActual.setAttribute('src',`/static/img/products/${respuesta.data['img']}`)
-            nombre.value=respuesta.data['name']
-            precio.value=respuesta.data['price']
-            stock.value=respuesta.data['stock']
-            descripcion.value=respuesta.data['description']
-            cargar_categorias(parseInt(respuesta.data['category']))
+            //cargo los datos al formulario y, si hay errores, redirijo a la lista
+            //de productos.
+            try {
+                const nombre=document.querySelector("[name='name']")
+                const precio=document.querySelector("[name='price']")
+                const stock=document.querySelector("[name='stock']")
+                const descripcion=document.querySelector("[name='description']")
+                const imgActual=document.querySelector("#imagenProductoActual")
+                imgActual.setAttribute('src',`/static/img/products/${respuesta.data['img']}`)
+                nombre.value=respuesta.data['name']
+                precio.value=respuesta.data['price']
+                stock.value=respuesta.data['stock']
+                descripcion.value=respuesta.data['description']
+                cargar_categorias(parseInt(respuesta.data['category']))
+            } catch (error) {
+               return window.location.href='http://localhost:5000/admin/products'
+            }
+          
         })
 }
 
